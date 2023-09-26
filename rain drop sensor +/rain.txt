@@ -1,0 +1,69 @@
+// Import required libraries
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <Servo.h>
+
+// Define the rain sensor pin
+#define RAIN_SENSOR_PIN A0
+
+// Define the I2C LCD settings
+#define LCD_ADDRESS 0x27 // I2C address of the LCD module (can vary, check your specific module)
+#define LCD_COLS 16      // Number of columns in the LCD
+#define LCD_ROWS 2       // Number of rows in the LCD
+
+// Create an LCD object
+LiquidCrystal_I2C lcd(LCD_ADDRESS, LCD_COLS, LCD_ROWS);
+
+// Create a Servo object
+Servo wiperServo;
+
+void setup() {
+  // Initialize serial communication for debugging (optional)
+  Serial.begin(9600);
+
+  // Initialize the I2C LCD
+  lcd.begin(LCD_COLS, LCD_ROWS);
+
+  // Turn on the backlight (if applicable)
+  lcd.backlight();
+
+  // Attach the servo to a pin
+  wiperServo.attach(9);
+}
+
+void loop() {
+  // Read the rain sensor value
+  int rainValue = analogRead(RAIN_SENSOR_PIN);
+
+  // Map the analog value to a percentage (0-100%)
+  int rainPercentage = map(rainValue, 0, 1023, 0, 100);
+
+  // Display the rain percentage on the LCD
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Rain: ");
+  lcd.print(rainPercentage);
+  lcd.print("%");
+
+  // Determine if the wiper should be activated
+  if (rainPercentage > 50) {
+    // If rain percentage is greater than 50%, activate the wiper
+    activateWiper();
+  } else {
+    // If rain percentage is less than 50%, stop the wiper
+    stopWiper();
+  }
+
+  // Add a delay for stability and to avoid excessive updates
+  delay(500);
+}
+
+void activateWiper() {
+  // Move the servo to the appropriate position for the wiper to start wiping
+  wiperServo.write(90); // Adjust the angle as per your servo and wiper setup
+}
+
+void stopWiper() {
+  // Move the servo to the stop position for the wiper
+  wiperServo.write(0); // Adjust the angle as per your servo and wiper setup
+}

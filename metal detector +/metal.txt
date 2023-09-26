@@ -1,0 +1,62 @@
+To create a metal detector using the KY-036 sensor with an Arduino, and then activating an LED and a buzzer when metal is detected, follow the steps below. First, connect the KY-036 sensor to the Arduino as follows:
+
+KY-036 AO (Analog Output) pin to Arduino A0
+KY-036 GND (Ground) pin to Arduino GND
+KY-036 + (VCC) pin to Arduino 5V
+Connect a LED and a current-limiting resistor (e.g., 220-470 ohms) in series to a digital pin (e.g., pin 13) of the Arduino.
+Connect a buzzer (active or passive) to another digital pin (e.g., pin 12) of the Arduino.
+Here's the code for the metal detector:
+
+cpp
+Copy code
+// Define the pins
+const int metalDetectorPin = A0;
+const int ledPin = 13;
+const int buzzerPin = 12;
+
+// Define the threshold value for metal detection
+const int metalThreshold = 800; // You can adjust this value based on your environment and sensor sensitivity
+
+void setup() {
+  // Initialize serial communication (optional)
+  Serial.begin(9600);
+
+  // Set pins mode
+  pinMode(metalDetectorPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
+
+  // Turn off the LED and buzzer initially
+  digitalWrite(ledPin, LOW);
+  digitalWrite(buzzerPin, LOW);
+}
+
+void loop() {
+  // Read the analog value from the metal detector
+  int metalValue = analogRead(metalDetectorPin);
+
+  // Check if metal is detected
+  if (metalValue > metalThreshold) {
+    // Metal detected, turn on LED and buzzer
+    digitalWrite(ledPin, HIGH);
+    digitalWrite(buzzerPin, HIGH);
+    delay(200); // Delay to create the "bip" sound
+    digitalWrite(buzzerPin, LOW);
+  } else {
+    // No metal detected, turn off LED and buzzer
+    digitalWrite(ledPin, LOW);
+    digitalWrite(buzzerPin, LOW);
+  }
+
+  // Print the metal value (optional for debugging)
+  Serial.print("Metal Value: ");
+  Serial.println(metalValue);
+
+  // Add a small delay for stability
+  delay(100);
+}
+In this code, the analog output of the KY-036 sensor is read using the analogRead function. If the value read exceeds the metal threshold value (800 in this example), it indicates metal detection, and the LED and buzzer are activated for a short duration to create the "bip" sound. When no metal is detected, the LED and buzzer are turned off.
+
+Remember to adjust the metalThreshold value according to your environment and the sensitivity of the sensor. You can experimentally find a suitable value that works best for your application.
+
+Ensure that you've correctly wired the components as described above. Additionally, you can add a power source (e.g., a 9V battery) for the buzzer if the Arduino's 5V pin does not provide enough power.

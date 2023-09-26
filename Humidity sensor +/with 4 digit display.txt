@@ -1,0 +1,21 @@
+#include <TM1637Display.h>
+#include <DHT.h> // Include the DHT library
+#define DHTPIN A0 // Replace A0 with the appropriate pin connected to the humidity sensor
+#define DHTTYPE DHT11 // Change DHT11 to DHT22 if you are using the DHT22 sensor
+
+DHT dht(DHTPIN, DHTTYPE);
+#define CLK_PIN D1   // GPIO pin connected to the clock pin of the 4-digit display
+#define DIO_PIN D2   // GPIO pin connected to the data pin of the 4-digit display
+TM1637Display display(CLK_PIN, DIO_PIN);
+
+void setup() {
+  dht.begin(); // Initialize the DHT sensor
+  display.setBrightness(7); // Adjust brightness (0 to 7, 0 = off)
+}
+
+void loop() {
+  float humidity = dht.readHumidity(); // Read humidity from the sensor
+  int humidityInt = static_cast<int>(humidity); // Convert the float value to an integer
+  display.showNumberDec(humidityInt); // Display the humidity value
+  delay(1000); // Delay for 1 second before updating the display
+}

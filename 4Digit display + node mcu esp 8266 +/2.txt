@@ -1,0 +1,51 @@
+#include <NTPClient.h>
+#include <ESP8266WiFi.h>
+#include <WiFiUdp.h>
+#include <TM1637Display.h>
+
+#define CLK D2
+#define DIO D3
+
+TM1637Display display(CLK, DIO);
+
+const char* ssid = "DESKTOP-RAJAT";
+const char* password = "00000000";
+
+const long utcOffsetInSeconds = 19802;  
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
+
+void setup(){
+  Serial.begin(115200);
+  display.clear();
+  WiFi.begin(ssid, password);
+
+  while ( WiFi.status() != WL_CONNECTED ) {
+    delay ( 500 );
+    Serial.print ( "." );
+  }
+
+  timeClient.begin();
+}
+
+void loop() {
+  int hours12, minutes, seconds;
+  
+  timeClient.update();
+  display.setBrightness(7);
+  
+  hours12 = timeClient.getHours() % 12; // Get the hours in 12-hour format
+  if (hours12 == 0) {
+    hours12 = 12; // If it's 0, set it to 12 (12-hour format)
+  }
+  
+  minutes = timeClient.getMinutes();
+  seconds = timeClient.getSeconds();
+  
+  if((seconds % 2) == 0) {
+    display.showNumberDecEx(hours12 * 100 + minutes, 0b01000000 , false, 4, 0); // Display with colon (":")
+  } else {
+    display.showNumberDecEx(hours12 * 100 + minutes, 0b00000000 , false, 4, 0); // Display without colon
+  }
+}

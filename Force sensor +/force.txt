@@ -1,0 +1,63 @@
+#include <Wire.h>  // Include the I2C library
+#include <LiquidCrystal_I2C.h>  // Include the I2C LCD library
+
+// I2C display configuration
+LiquidCrystal_I2C lcd(0x27, 16, 2);  // Change the address and size if you have a different display
+
+// Analog force sensor pin
+const int FORCE_SENSOR_PIN = A0;  // Connect the force sensor to the A0 analog input pin
+
+void setup() {
+  // Initialize the serial communication (for debugging purposes)
+  Serial.begin(9600);
+  
+  // Initialize the I2C display
+  lcd.begin(16, 2);
+  lcd.backlight();
+  
+  // Print a message to indicate the setup is complete
+  lcd.setCursor(0, 0);
+  lcd.print("Force Sensor Test");
+}
+
+void loop() {
+  // Read the analog value from the force sensor
+  int rawValue = analogRead(FORCE_SENSOR_PIN);
+  
+  // Convert the analog value to force (adjust this conversion based on your sensor's calibration)
+  // For example, if you have a linear relationship between analog voltage and force, use a linear equation.
+  // If you have a datasheet for your specific sensor, use the calibration data provided.
+  float force = map(rawValue, 0, 1023, 0, 5000);  // Example: Maps 0-1023 to 0-5000 grams
+  
+  // Display the force value on the I2C display
+  lcd.setCursor(0, 1);
+  lcd.print("Force: ");
+  lcd.print(force, 2);  // Display force with two decimal places (you can adjust this value as needed)
+  lcd.print(" g");      // Modify the unit if required (e.g., " kg", " lb", etc.)
+  
+  // Print the force value to the serial monitor (for debugging purposes)
+  Serial.print("Force: ");
+  Serial.print(force, 2);  // Display force with two decimal places (you can adjust this value as needed)
+  Serial.println(" g");    // Modify the unit if required (e.g., " kg", " lb", etc.)
+  
+  delay(100);  // Adjust the delay as needed to control the display update frequency
+}
+
+
+If you don't have an HX711 Load Cell Amplifier Module, you can use an analog force sensor with the Arduino. These sensors typically produce an analog voltage output that can be directly read by the Arduino's analog input pins. Here's how you can connect and read the analog force sensor:
+
+Components needed:
+
+Arduino board (e.g., Arduino Uno)
+Analog force sensor (e.g., strain gauge-based load cell with analog output)
+I2C display (e.g., 16x2 or 20x4 character LCD with I2C backpack)
+Breadboard and jumper wires
+Wiring:
+
+Connect the analog force sensor's output to one of the Arduino's analog input pins (e.g., A0).
+Connect the I2C display to the Arduino using the SDA and SCL pins (check the I2C display's datasheet for the correct connections).
+Here's the code to read the analog force sensor and display the measured force on the I2C display:
+
+In this code, we are using the analogRead() function to read the analog value from the force sensor connected to the A0 pin. The raw analog value is then mapped to the desired force range (e.g., 0 to 5000 grams) using the map() function. The force value is then displayed on the I2C display, and the serial monitor can be used for debugging purposes.
+
+Please note that the calibration of the analog force sensor may vary depending on the specific sensor you are using. Refer to the datasheet or documentation provided by the sensor manufacturer for accurate calibration data. Calibration may involve using known weights to determine the relationship between the analog voltage and the actual force applied to the sensor.

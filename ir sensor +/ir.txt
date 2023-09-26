@@ -1,0 +1,65 @@
+
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+// IR Sensor pins
+const int irSensor1Pin = 2;
+const int irSensor2Pin = 3;
+
+// I2C Display initialization
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// Variables to store time measurements
+unsigned long timeSensor1 = 0;
+unsigned long timeSensor2 = 0;
+unsigned long timeDifference = 0;
+
+// Variables to store speed calculation
+const float distanceBetweenSensors = 10.0; // Adjust this value according to your setup (in cm)
+const unsigned long refreshInterval = 1000; // Time interval for refreshing the display (in ms)
+
+void setup() {
+  // Initialize IR sensor pins
+  pinMode(irSensor1Pin, INPUT);
+  pinMode(irSensor2Pin, INPUT);
+
+  // Initialize I2C display
+  lcd.begin(16, 2);
+  lcd.print("SPEED:");
+  lcd.setCursor(0, 1);
+  lcd.backlight();
+  lcd.print("0 cm/s");
+  delay(2000); // Give some time to read the initial message
+
+  lcd.clear();
+}
+
+void loop() {
+  // Read the state of the IR sensors
+  int sensor1State = digitalRead(irSensor1Pin);
+  int sensor2State = digitalRead(irSensor2Pin);
+
+  // Check for the object passing through sensor 1
+  if (sensor1State == HIGH && sensor2State == LOW) {
+    timeSensor1 = millis(); // Record the time when the object passes sensor 1
+  }
+
+  // Check for the object passing through sensor 2
+  if (sensor2State == HIGH && sensor1State == LOW) {
+    timeSensor2 = millis(); // Record the time when the object passes sensor 2
+    timeDifference = timeSensor2 - timeSensor1; // Calculate the time taken between the two sensors
+
+    // Calculate speed using the formula: speed = distance / time
+    float speed = (distanceBetweenSensors / timeDifference) * 1000; // Convert time to seconds and multiply by 1000 to get cm/s
+
+    // Update the display
+    lcd.clear();
+    lcd.print("Speed:");
+    lcd.setCursor(0, 1);
+    lcd.print(speed);
+    lcd.print(" cm/s");
+
+    // Wait for a short time before detecting the next object
+    delay(refreshInterval);
+  }
+}

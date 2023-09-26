@@ -1,0 +1,35 @@
+const int piezoSensorPin = A0; // Connect the piezoelectric sensor to analog pin A0
+const int ledPin = 9;          // Connect the LED to digital pin 9
+
+void setup() {
+  pinMode(ledPin, OUTPUT); // LED pin as output
+  Serial.begin(9600);      // Initialize serial communication (for debugging)
+}
+
+void loop() {
+  // Read the analog value from the piezoelectric sensor
+  int sensorValue = analogRead(piezoSensorPin);
+
+  // Map the analog value to the LED brightness range (0-255)
+  int ledBrightness = map(sensorValue, 0, 1023, 0, 255);
+
+  // Turn on the LED with the mapped brightness
+  analogWrite(ledPin, ledBrightness);
+
+  // Print the sensor value (for debugging)
+  Serial.print("Sensor Value: ");
+  Serial.print(sensorValue);
+  Serial.print(", LED Brightness: ");
+  Serial.println(ledBrightness);
+
+  delay(100); // Adjust the delay as needed to control the LED responsiveness
+}
+
+
+Connect the positive side of the
+ piezoelectric sensor to the analog pin
+ A0 on the Arduino and the negative side
+ to GND. Connect the LED's positive leg to
+ the digital pin 9 on the Arduino and the 
+negative leg to GND through a 
+current-limiting resistor (220-330 ohms).

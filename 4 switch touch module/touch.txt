@@ -1,0 +1,68 @@
+const int touchSensor1 = 5;  // Pin connected to touch sensor 1
+const int touchSensor2 = 6;  // Pin connected to touch sensor 2
+const int touchSensor3 = 7;  // Pin connected to touch sensor 3
+const int touchSensor4 = 8;  // Pin connected to touch sensor 4
+
+const int ledPin1 = 9;       // Pin connected to LED 1
+const int ledPin2 = 10;       // Pin connected to LED 2
+const int ledPin3 = 11;       // Pin connected to LED 3
+const int ledPin4 = 12;       // Pin connected to LED 4
+
+bool isTouched1 = false;
+bool isTouched2 = false;
+bool isTouched3 = false;
+bool isTouched4 = false;
+
+void setup() {
+  pinMode(touchSensor1, INPUT_PULLUP);
+  pinMode(touchSensor2, INPUT_PULLUP);
+  pinMode(touchSensor3, INPUT_PULLUP);
+  pinMode(touchSensor4, INPUT_PULLUP);
+  
+  pinMode(ledPin1, OUTPUT);
+  pinMode(ledPin2, OUTPUT);
+  pinMode(ledPin3, OUTPUT);
+  pinMode(ledPin4, OUTPUT);
+  
+  digitalWrite(ledPin1, LOW);
+  digitalWrite(ledPin2, LOW);
+  digitalWrite(ledPin3, LOW);
+  digitalWrite(ledPin4, LOW);
+  
+  Serial.begin(9600);
+}
+
+void loop() {
+  isTouched1 = digitalRead(touchSensor1) == LOW;
+  isTouched2 = digitalRead(touchSensor2) == LOW;
+  isTouched3 = digitalRead(touchSensor3) == LOW;
+  isTouched4 = digitalRead(touchSensor4) == LOW;
+  
+  if (isTouched1) {
+    digitalWrite(ledPin1, HIGH);
+    digitalWrite(ledPin2, LOW);
+    digitalWrite(ledPin3, LOW);
+    digitalWrite(ledPin4, LOW);
+  } else if (isTouched2) {
+    digitalWrite(ledPin1, LOW);
+    digitalWrite(ledPin2, HIGH);
+    digitalWrite(ledPin3, LOW);
+    digitalWrite(ledPin4, LOW);
+  } else if (isTouched3) {
+    digitalWrite(ledPin1, LOW);
+    digitalWrite(ledPin2, LOW);
+    digitalWrite(ledPin3, HIGH);
+    digitalWrite(ledPin4, HIGH);
+  }
+  
+  Serial.print("Touch 1: ");
+  Serial.print(isTouched1);
+  Serial.print("\tTouch 2: ");
+  Serial.print(isTouched2);
+  Serial.print("\tTouch 3: ");
+  Serial.println(isTouched3);
+   Serial.print("\tTouch 4: ");
+  Serial.println(isTouched4);
+  
+  delay(100);  // Adjust delay based on your requirements
+}

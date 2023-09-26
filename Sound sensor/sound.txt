@@ -1,0 +1,26 @@
+const int soundSensorPin = A0; // Analog pin for sound sensor
+const int ledPin = 13;         // Digital pin for LED
+int threshold = 450;           // Adjust this threshold based on your sound sensor's sensitivity
+bool ledState = false;
+bool clapDetected = false;
+
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  int sensorValue = analogRead(soundSensorPin);
+
+  if (sensorValue > threshold && !clapDetected) {
+    clapDetected = true;
+    delay(50);  // Debounce delay to avoid detecting multiple claps
+  }
+
+  if (sensorValue <= threshold && clapDetected) {
+    clapDetected = false;
+    ledState = !ledState;
+    digitalWrite(ledPin, ledState);
+    delay(50);  // Debounce delay for LED switching
+  }
+}

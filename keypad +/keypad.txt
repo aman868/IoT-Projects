@@ -1,0 +1,129 @@
+CODE FOR OUTPUT TO AN LCD
+
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <Keypad.h>
+
+// Set the LCD address (usually 0x27 or 0x3F for PCF8574 I2C backpack)
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Adjust parameters based on your display
+
+const byte ROW_NUM    = 4; // 4 rows
+const byte COLUMN_NUM = 4; // 4 columns
+
+// Define the keymap
+char keys[ROW_NUM][COLUMN_NUM] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
+};
+
+byte pin_rows[ROW_NUM] = {9, 8, 7, 6};        // Connect to the row pinouts of the keypad
+byte pin_column[COLUMN_NUM] = {5, 4, 3, 2};   // Connect to the column pinouts of the keypad
+
+// Create the Keypad object
+Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM);
+
+void setup() {
+  lcd.begin(16, 2); // Initialize the LCD
+  lcd.print("Keypad Test");
+}
+
+void loop() {
+  char key = keypad.getKey();
+  if (key) {
+    lcd.clear();
+    lcd.print("Key Pressed:");
+    lcd.setCursor(0, 1);
+    lcd.print(key);
+    delay(500); // You can adjust the delay time to suit your needs
+  }
+}
+
+
+
+
+USE A PASSWORD TO ACTIVATE A RELAY
+
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <Keypad.h>
+
+// Set the LCD address (usually 0x27 or 0x3F for PCF8574 I2C backpack)
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Adjust parameters based on your display
+
+const byte ROW_NUM    = 4; // 4 rows
+const byte COLUMN_NUM = 4; // 4 columns
+
+// Define the keymap
+char keys[ROW_NUM][COLUMN_NUM] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
+};
+
+byte pin_rows[ROW_NUM] = {9, 8, 7, 6};        // Connect to the row pinouts of the keypad
+byte pin_column[COLUMN_NUM] = {5, 4, 3, 2};   // Connect to the column pinouts of the keypad
+
+// Create the Keypad object
+Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM);
+
+// Relay control pin
+const int relayPin = 10;
+
+// Password setup
+const char* password = "1234";
+char enteredPassword[5] = "";
+int passwordIndex = 0;
+bool passwordEntered = false;
+
+void setup() {
+  pinMode(relayPin, OUTPUT);
+  digitalWrite(relayPin, LOW); // Initially OFF
+  lcd.begin(16, 2); // Initialize the LCD
+  lcd.print("Enter Password:");
+}
+
+void loop() {
+  char key = keypad.getKey();
+  if (key) {
+    lcd.setCursor(passwordIndex, 1);
+    lcd.print('*');
+    if (key == '#') {
+      if (strcmp(enteredPassword, password) == 0) {
+        lcd.clear();
+        lcd.print("Password OK");
+        digitalWrite(relayPin, HIGH); // Turn ON the relay
+        delay(2000); // Relay ON for 2 seconds (you can adjust the time)
+        digitalWrite(relayPin, LOW); // Turn OFF the relay
+        lcd.clear();
+        lcd.print("Enter Password:");
+      } else {
+        lcd.clear();
+        lcd.print("Wrong Password");
+        delay(2000); // Display for 2 seconds (you can adjust the time)
+        lcd.clear();
+        lcd.print("Enter Password:");
+      }
+      passwordIndex = 0;
+      memset(enteredPassword, 0, sizeof(enteredPassword));
+      passwordEntered = false;
+    } else if (key == '*') {
+      passwordIndex = 0;
+      memset(enteredPassword, 0, sizeof(enteredPassword));
+      lcd.clear();
+      lcd.print("Enter Password:");
+      passwordEntered = false;
+    } else {
+      if (passwordIndex < 4) {
+        enteredPassword[passwordIndex] = key;
+        passwordIndex++;
+        if (!passwordEntered) {
+          lcd.setCursor(passwordIndex - 1, 1);
+          lcd.print('*');
+        }
+      }
+    }
+  }
+}

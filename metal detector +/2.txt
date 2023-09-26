@@ -1,0 +1,30 @@
+// Pin numbers
+const int touchPin = A0; // KY-036 Analog Output connected to A0
+const int buzzerPin = 8; // Buzzer connected to digital pin 8
+const int ledPin = 9;    // LED connected to digital pin 9
+
+// Threshold value for touch detection
+const int touchThreshold = 300;
+
+void setup() {
+  pinMode(buzzerPin, OUTPUT);
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  int touchValue = analogRead(touchPin);
+
+  // Check if the touch sensor is triggered
+  if (touchValue > touchThreshold) {
+    // Metal is touched, activate buzzer and LED
+    digitalWrite(buzzerPin, LOW);
+    digitalWrite(ledPin, LOW);  // Turn OFF the LED
+    Serial.println("Metal Touched!");
+  } else {
+    // Metal is not touched, turn off buzzer and LED
+    digitalWrite(buzzerPin, HIGH);
+    digitalWrite(ledPin, HIGH); // Turn ON the LED
+    Serial.println("Not Touched");
+  }
+}

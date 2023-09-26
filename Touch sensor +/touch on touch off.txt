@@ -1,0 +1,27 @@
+const int touchPin = 7; // Connect the touch sensor output pin to digital pin 2
+const int ledPin = 11;  // Connect the LED to digital pin 13
+
+// Variables
+bool isTouched = false;
+bool lastTouchedState = false;
+bool ledState = false;
+
+void setup() {
+  pinMode(touchPin, INPUT_PULLUP); // Set touch sensor pin as input with internal pull-up resistor
+  pinMode(ledPin, OUTPUT);         // Set LED pin as output
+}
+
+void loop() {
+  // Read the current state of the touch sensor
+  bool currentTouchedState = digitalRead(touchPin);
+
+  // Check if the touch sensor is touched
+  if (!currentTouchedState && lastTouchedState) {
+    // Toggle the LED state when touched
+    ledState = !ledState;
+    digitalWrite(ledPin, ledState);
+    delay(50); // Debounce the touch sensor
+  }
+
+  lastTouchedState = currentTouchedState;
+}

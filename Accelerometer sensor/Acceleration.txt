@@ -1,0 +1,57 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);  // Replace with your LCD's I2C address
+
+const int xPin = A0;  // Analog pin for X-axis acceleration
+const int yPin = A1;  // Analog pin for Y-axis acceleration
+const int zPin = A2;  // Analog pin for Z-axis acceleration
+
+void setup() {
+  lcd.init();                      // Initialize the LCD
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("X: ");
+  lcd.setCursor(0, 1);
+  lcd.print("Y: ");
+  lcd.setCursor(9, 0);
+  lcd.print("Z: ");
+  
+  pinMode(xPin, INPUT);
+  pinMode(yPin, INPUT);
+  pinMode(zPin, INPUT);
+  
+  Serial.begin(9600);
+}
+
+void loop() {
+  int xValue = analogRead(xPin);
+  int yValue = analogRead(yPin);
+  int zValue = analogRead(zPin);
+
+  // Convert analog values to acceleration in g (assuming 3.3V reference)
+  float x = (xValue - 512.0) * 3.3 / 1024.0;
+  float y = (yValue - 512.0) * 3.3 / 1024.0;
+  float z = (zValue - 512.0) * 3.3 / 1024.0;
+
+  // Display acceleration values on LCD
+  lcd.setCursor(3, 0);
+  lcd.print(x, 2);
+  lcd.setCursor(3, 1);
+  lcd.print(y, 2);
+  lcd.setCursor(11, 0);
+  lcd.print(z, 2);
+  
+  // Print acceleration values to serial monitor
+  Serial.print("X: ");
+  Serial.print(x, 2);
+  Serial.print(" g\t");
+  Serial.print("Y: ");
+  Serial.print(y, 2);
+  Serial.print(" g\t");
+  Serial.print("Z: ");
+  Serial.print(z, 2);
+  Serial.println(" g");
+
+  delay(500);  // Adjust delay based on your requirements
+}

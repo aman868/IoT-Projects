@@ -1,0 +1,22 @@
+int touch = 10;  // pin for touch sensor
+int ledPin = 13; // pin for the LED
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(ledPin, OUTPUT);
+  pinMode(touch, INPUT);
+}
+
+void loop() {
+  int touchValue = digitalRead(touch);
+  if (touchValue == HIGH){
+    digitalWrite(ledPin, HIGH);
+    Serial.println("touched");
+  }
+  else{
+    digitalWrite(ledPin,LOW);
+    Serial.println("not touched");
+  }
+  delay(500);
+
+}
